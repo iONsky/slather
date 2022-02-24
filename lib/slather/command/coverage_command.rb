@@ -35,6 +35,7 @@ class CoverageCommand < Clamp::Command
   option ["--arch"], "ARCH", "Architecture to use from universal binaries"
   option ["--source-files"], "SOURCE_FILES", "A Dir.glob compatible pattern used to limit the lookup to specific source files. Ignored in gcov mode.", :multivalued => true
   option ["--decimals"], "DECIMALS", "The amount of decimals to use for % coverage reporting"
+  option ["--path-equivalence"], "PATH_EQUIVALENCE", "Map the paths in the coverage data to local source file paths"
 
   def execute
     puts "Slathering..."
@@ -55,6 +56,7 @@ class CoverageCommand < Clamp::Command
     setup_arch
     setup_source_files
     setup_decimals
+    setup_path_equivalence
 
     project.configure
 
@@ -171,5 +173,9 @@ class CoverageCommand < Clamp::Command
 
   def setup_decimals
     project.decimals = decimals if decimals
+  end
+
+  def setup_path_equivalence
+    project.path_equivalence = path_equivalence if path_equivalence
   end
 end

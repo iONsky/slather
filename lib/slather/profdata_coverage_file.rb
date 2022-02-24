@@ -39,7 +39,17 @@ module Slather
             # Empty file, output just contains path
             path = self.source.sub ":", ""
           end
+
           path &&= Pathname(path)
+
+          if project.path_equivalence
+            path_equivalences = project.path_equivalence.split(",")
+            temp_path = path_equivalences[0]
+            target_path = path_equivalences[1]
+            path = path.sub(temp_path, target_path)
+          end
+
+          path
         else
           # llvm-cov was run with just one matching source file
           # It doesn't print the source path in this case, so we have to find it ourselves
@@ -53,6 +63,13 @@ module Slather
             if digest == file_digest
               path = file
             end
+          end
+
+          if project.path_equivalence
+            path_equivalences = project.path_equivalence.split(",")
+            temp_path = path_equivalences[0]
+            target_path = path_equivalences[1]
+            path = path.sub(temp_path, target_path)
           end
 
           path
@@ -189,7 +206,6 @@ module Slather
     def branch_coverage_data
       @branch_coverage_data ||= begin
         branch_coverage_data = Hash.new
-
         self.segments.each do |segment|
           line, col, hits, has_count, *rest = segment
           next if !has_count
